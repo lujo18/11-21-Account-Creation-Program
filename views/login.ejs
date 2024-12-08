@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="static/styles/styles.css">
+</head>
+<body>
+    <nav class="horizontal">
+        <ul>
+            <li><a class="btn" href="/">H</a></li>
+        </ul>
+        <ul>
+            <li><a class="btn" href="/signup">Sign Up</a></li>
+            <li><a class="btn secondary-btn" href="/login">Log in</a></li>
+        </ul>
+    </nav>
+    <main class="halfs">
+        <section>
+            <div class="sign-in-poster">
+                <img src="static/photos/log-in-poster.jpg">
+            </div>
+        </section>
+        <section class="input-container">
+            <div class="page-header">
+                <h1>Sign In</h1>
+                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p>
+            </div>
+            <form method="post" id="sign-in-form" class="account-form">
+                <div>
+                    <label for="username">Username: </label>
+                    <input id="username" name="username" type="text" autocomplete="on" required>
+                </div>
+                <div>
+                    <label for="password">Password: </label>
+                    <input id="password" name="password" type="password" autocomplete="on" required>
+                </div>
+                <button type="submit">Submit</button>
+                <p class="error-message">Username or Password Incorrect</p>
+            </form>
+        </section>
+    </main>
+
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+" crossorigin="anonymous"></script> 
+    <script>
+        const loginForm = document.querySelector("form");
+        const errorMsg = document.querySelector(".error-message");
+
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const username = loginForm.querySelector("#username").value;
+            const password = loginForm.querySelector("#password").value;
+
+            try {
+                console.log(username)
+
+                const response = await fetch('/login', {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({username, password})
+                })
+
+                if (!(await response.ok)) {
+                    const errorData = response.json();
+                    console.log(errorData.message)
+                    errorMsg.style.display = "block";
+
+                    document.addEventListener("keyup", () => {
+                        errorMsg.style.display = "none";
+                    })
+                } else {
+                    const res = await response.json()
+
+                    window.location.href = res.redirect
+                }
+            
+
+            } catch (e) {}
+        })
+        
+    </script>
+</body>
+</html>

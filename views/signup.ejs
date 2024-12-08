@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="static/styles/styles.css">
+</head>
+<body class="halfs">
+    <nav class="horizontal">
+        <ul>
+            <li><a class="btn" href="/">H</a></li>
+        </ul>
+        <ul>
+            <li><a class="btn" href="/signup">Sign Up</a></li>
+            <li><a class="btn secondary-btn" href="/login">Log in</a></li>
+        </ul>
+    </nav>
+    <main class="halfs">
+        <section>
+            <div class="sign-in-poster">
+                <img src="static/photos/sign-in-poster.jpg">
+            </div>
+        </section>
+        <section class="input-container">
+            <div class="page-header">
+                <h1>Sign Up</h1>
+                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p>
+            </div>
+            <form action="/signup" method="post" id="sign-in-form" class="account-form">
+                <div>
+                    <label for="username">Username: </label>
+                    <p id="username-taken">! username taken</p>
+                    <input id="username" name="username" type="text" autocomplete="off" required>
+                </div>
+                <div>
+                    <label for="password">Password: </label>
+                    <input id="password" name="password" type="password" autocomplete="new-password" required>
+                </div>
+                <button type="submit">Submit</button>
+            </form>
+        </section>
+    </main>
+
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+" crossorigin="anonymous"></script>    
+    <script>
+        
+        const socket = io({
+            transports: ["websocket"],
+        });
+
+        socket.on('connect', () => {
+            console.log("Connected to server: ", socket.id); // This should log when connected
+        });
+
+        socket.on('connect_error', (error) => {
+            console.error("Connection error: ", error); // Logs errors in connection
+        });
+
+        const usernameInput = document.querySelector("#username");
+        const usernameTaken = document.querySelector("#username-taken")
+        const formSubmit = document.querySelector("form > button")
+
+        console.log(formSubmit)
+
+        usernameInput.addEventListener("keyup", () => {
+            socket.emit("checkUsername", usernameInput.value)
+        })
+
+        socket.on("verifiedUser", (usernameExists) => {
+            if (usernameExists) {
+                usernameTaken.style.display = "block";
+                formSubmit.disabled = true;            }
+            else {
+                usernameTaken.style.display = "none";
+                formSubmit.disabled = false;
+            }
+        })
+
+        socket.emit("checkUsername", usernameInput.value)
+    </script>
+</body>
+</html>

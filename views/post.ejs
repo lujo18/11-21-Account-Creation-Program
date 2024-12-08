@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="preload" href="/static/styles/styles.css">
+    <link rel="stylesheet" href="/static/styles/styles.css">
+    <script src="https://kit.fontawesome.com/45743c6752.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    
+    <main class="thirds">  
+        <%- include("partials/inAppNav")%>
+        <section>
+            <h3>Post</h3>
+            <div class="block">
+                <h1><input name="username" id="username-box" autocomplete="username" value="<%= data.title %>" disabled></h1>
+                <textarea data-gramm="false" spellcheck="false" autocomplete="false" maxlength="72" id="user-description" placeholder="Create your user-description" disabled><%= data.content%></textarea>
+                
+            </div>
+
+        </section>
+
+    </main>
+    <%- include("partials/createPost")%>
+</body>
+</html>

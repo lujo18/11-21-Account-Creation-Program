@@ -1,0 +1,405 @@
+* {
+    padding: 0;
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    box-sizing: border-box;
+    color: white;
+}
+
+
+:root {
+    --main-background: #0a0a0a;
+    --secondary-background: #2d2d2d;
+    --disabled-text: #949494;
+}
+
+body {
+    background-color: var(--main-background);
+    height: 100vh;
+    overflow: hidden;
+}
+
+nav {
+    border-bottom: 1px solid var(--secondary-background);
+    padding: 1rem 3rem;
+    display: flex;
+    justify-content: space-between;
+
+}
+
+nav ul {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+nav.horizontal ul {
+    flex-direction: row;
+}
+
+
+li:has(.btn) {
+    display: block;
+    list-style: none;
+    display: grid;
+}
+
+.btn {
+    box-sizing: border-box;
+    text-decoration: none;
+    list-style: none;
+    background-color: white;
+    color: var(--main-background);
+    padding: 1rem 1.5rem;
+    border-radius: 2rem;
+    width: fit-content;
+}
+
+.secondary-btn {
+    background-color: transparent;
+    color: white;
+    border: 1.5px solid white;
+}
+
+
+
+main {
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    background-color: var(--main-background);
+
+}
+
+main.halfs {
+    grid-template-columns: 1.5fr 1fr;
+    grid-template-rows: 100vh;
+}
+
+main.thirds {
+    grid-template-columns: 15% 70% 15%;
+    grid-template-rows: 100vh;
+}
+
+main > section {
+    padding: 1rem 3rem;
+    width: 100%;
+}
+
+
+
+.page-header h1 {
+    color: white;
+    font-size: 1.5em;
+    margin-bottom: 1rem;
+}
+
+.page-header p {
+    color: var(--disabled-text);
+}
+
+
+.sign-in-poster {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 1rem;
+
+}
+
+.sign-in-poster > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.account-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 10rem;
+    gap: 2rem;
+}
+
+.input-container > * { 
+    width: min(300px, 80%);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    
+    
+    width: 100%;
+    gap: 1rem;
+
+    color: white;
+}
+
+form > * {
+    width: 100%;
+}
+
+form > div {
+    position: relative;
+}
+
+form > div > label {
+    position: absolute;
+    top: -.5rem;
+    left: 1.5rem;
+    color: var(--disabled-text);
+    background-color: var(--main-background);
+    z-index: 2;
+    padding: 0 .5rem;
+    font-size: .8em;
+}
+
+#username-taken {
+    position: absolute;
+    bottom: -.7rem;
+    right: .5rem;
+    font-size: .8em;
+    background-color: rgb(161, 35, 192);
+    border-radius: 1rem;
+    padding: .5rem 1rem;
+    display: none;
+}
+
+input {
+    padding: 1rem;
+    border-radius: 1rem;
+    background-color: var(--main-background);
+    border: 2px solid var(--secondary-background);
+    width: 100%;
+    color: white;
+}
+
+#username-box {
+    font-size: 1.5em;
+    font-weight: 600;
+}
+
+input:disabled {
+    border: none;
+}
+
+
+
+form input:-webkit-autofill {
+    background-color: var(--main-background) !important;
+    transition: background-color 500ms ease-in-out, color 500ms ease-in-out;
+}
+
+
+
+button {
+    padding: 1rem;
+    border: none;
+    background-color: white;
+    color: black;
+    border-radius: 2rem;
+    transition: .3s ease;
+}
+
+button:not(:disabled):hover {
+    filter: brightness(.9);
+}
+
+button:disabled {
+    filter: brightness(.7);
+}
+
+.block {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--secondary-background);
+    border-radius: 2rem;
+    padding: 2rem;
+    width: 100%;
+}
+
+.error-message {
+    color: rgb(161, 35, 192);
+    font-size: .8em;
+    text-align: center;
+    display: none;
+}
+
+#pass-change-msg {
+    font-size: .8em;
+    text-align: center;
+    display: none;
+    color: aquamarine;
+}
+
+textarea {
+
+    background-color: transparent;
+    color: rgb(188, 188, 188);
+    resize: none;
+    width: 20em;
+    height: calc(2 * 1.5em + 2rem);
+    padding: 1rem;
+    border-radius: 1rem;
+    border: 2px solid var(--secondary-background);
+}
+
+textarea:disabled {
+    border: none;
+}
+
+.account-edit-btns {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+
+#create-post {
+    background-color: rgb(86, 36, 205);
+    border-radius: 5rem;
+    padding: 1rem;
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 5;
+}
+
+.post-cont {
+    z-index: 10;
+    width: min(1000px, 50vw);
+    height: 50vh;
+    position: absolute;
+    background-color: var(--main-background);
+    border: 2px solid var(--secondary-background);
+    border-radius: 2rem;
+    padding: 1rem;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: .8s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.post-cont.hidden{
+    transform: translate(-50%, 100%) !important;
+}
+
+#new-post {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.post-cont #post-title {
+    font-size: 1.5em;
+}
+
+.post-cont div:has(textarea) {
+    flex-grow: 2;
+}
+
+.post-cont textarea {
+    width: 100%;
+    font-size: 1.2em;
+    height: 100%;
+}
+
+.post-cont .btn {
+    align-self: flex-end;
+}
+
+.cover {
+    z-index: 6;
+    backdrop-filter: brightness(.5);
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    display: none;
+    left: 0;
+    top: 0;
+}
+
+.group-cont {
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    
+}
+
+.group-cont .block {
+    align-self: center;
+    gap: 1rem;
+}
+
+.post {
+    background-color: var(--main-background);
+    border: 1px solid var(--secondary-background);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 2rem;
+
+}
+
+.posts-cont {
+    overflow-y: auto;
+    height: 100%;
+}
+
+.post-body {
+    margin-left: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.post-data {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.post-data > div {
+    display: flex;
+    flex-direction: row;
+    gap: .5rem;
+}
+
+.like-cont {
+    cursor: pointer;
+    height: 1rem
+}
+
+.fa-heart {
+    transition: .3s ease;
+}
+
+.fa-heart.fa-solid {
+    color: rgb(232, 55, 212);
+    scale: 1.1;
+}
+
+
+
+
+.like-cont:has(.fa-heart.fa-regular):hover .fa-heart{
+    color: rgb(232, 55, 212);
+    text-shadow: 0 0 10px rgb(232, 55, 212), 0 0 5px rgb(232, 55, 212);
+}
+
+.like-cont:has(.fa-heart.fa-solid) .likes{
+    color: rgb(232, 55, 212);
+}
+
+.like-cont:has(.fa-heart.fa-regular):hover .likes{
+    color: rgb(232, 55, 212);
+}

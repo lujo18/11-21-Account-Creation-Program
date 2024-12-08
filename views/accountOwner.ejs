@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="preload" href="/static/styles/styles.css">
+    <link rel="stylesheet" href="/static/styles/styles.css">
+</head>
+<body>
+   
+
+    <main class="thirds">  
+        <%- include("partials/inAppNav")%>
+        <section>
+            <h3>User Page</h3>
+            <form class="block">
+                <div>
+                    <h1><input name="username" id="username-box" autocomplete="username" value="<%= data.username %>" disabled></h1>
+                    <textarea data-gramm="false" spellcheck="false" autocomplete="false" maxlength="72" id="user-description" placeholder="Create your user-description" disabled><%= data.description%></textarea>
+                </div>
+                <div class="account-edit-btns">
+                    <button style="display: none;" id="reset-account-changes">Reset</button>
+                    <button class="btn" type="submit" id="edit-account-btn">Edit Account</button>
+                    
+                </div>
+                
+            </form>
+
+            <div class="block">
+                <h3 style="margin-bottom: 2rem;">Change Password</h3>
+                <form method="post" id="password-changer" target="pass-change-success">
+                    <div>
+                        <label for="password">New Password: </label>
+                        <input id="password" name="password" type="password" autocomplete="current-password" required>
+                    </div>
+                    <div>
+                        <label for="password">Re-enter Password: </label>
+                        <input id="password" name="password" type="password" autocomplete="current-password" required>
+                    </div>
+                    <button type="submit" disabled>Submit</button>
+                    <p id="pass-change-msg">Password change successful</p>
+                </form>
+                <iframe name="pass-change-success" style="display: none;"></iframe>
+            </div>
+        </section>
+
+    </main>
+
+    <%- include("partials/createPost")%>
+
+    <script>
+        const passwordChanger = document.querySelector("#password-changer");
+
+       
+        passwordChanger.addEventListener('keyup', () => {
+            let pass = [];
+            passwordChanger.querySelectorAll("input").forEach(e => {
+                pass.push(e.value);
+            })
+            console.log(pass)
+            if (pass[0] == pass[1]) {
+                passwordChanger.querySelector("button").disabled = false;
+            }
+            else {
+                passwordChanger.querySelector("button").disabled = true;
+            }
+        })
+
+        const userDesc = document.querySelector("#user-description")
+
+        const passwordInput = document.querySelector("#password")
+        const passChangeMsg = document.querySelector("#pass-change-msg")
+
+        userDesc.addEventListener("keyup", () => {
+            const maxLines = 2;
+
+            const lines = userDesc.value.split('\n');
+            console.log(lines.slice(0, maxLines).join("\n"))
+            let newVal = ""
+            if (lines.length >= maxLines) {
+                userDesc.value = lines.slice(0, maxLines).join('\n')
+            }
+            
+        })
+
+        passwordChanger.addEventListener("submit", async (e) => {
+            e.preventDefault()
+
+            const password = passwordInput.value;
+
+            try {
+                const success = await fetch("/change-pass", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({password})
+                })
+                .then (response => {
+                    if(response.ok) {
+                        passChangeMsg.style.display = "block";
+                    }                    
+                })
+
+            }
+            catch (e) {
+                console.error("Error submitting password change: ", e);
+            }
+        })
+
+
+        const editAccountBtn = document.querySelector("#edit-account-btn")
+        const resetAccountBtn = document.querySelector("#reset-account-changes")
+        const usernameInput = document.querySelector("#username-box")
+        const descriptionInput = document.querySelector("#user-description")
+
+        let tempUsername, tempDescription
+        editAccountBtn.addEventListener("click", async (e) => {
+            e.preventDefault()
+            e.stopImmediatePropagation()
+            if (usernameInput.disabled && descriptionInput.disabled) {
+                tempUsername = usernameInput.value;
+                tempDescription = descriptionInput.value;
+
+
+                editAccountBtn.innerHTML = "Save Changes"
+                usernameInput.disabled = false;
+                descriptionInput.disabled = false;
+
+                resetAccountBtn.style.display = "block";
+
+                
+            } else {
+                if (!(usernameInput.value == tempUsername && descriptionInput.value == tempDescription)) {
+                    tempUsername = usernameInput.value;
+                    tempDescription = descriptionInput.value
+                    const update = await fetch("/edit-account", {
+                        method: "POST",
+                        headers: {"Content-Type": "application/json"},
+                        body: JSON.stringify({username: tempUsername, description: tempDescription})
+                    })
+                    
+                    if(window.loation.href != tempUsername) {
+                        window.location.href = `/user/${tempUsername}`
+                    }
+                }
+
+
+                resetAccountBtn.style.display = "none"
+
+                editAccountBtn.innerHTML = "Edit Account"
+                usernameInput.disabled = true;
+                descriptionInput.disabled = true;
+            }
+        })
+
+        resetAccountBtn.addEventListener("click", (e) => {
+            e.preventDefault()
+
+            usernameInput.value = tempUsername;
+            descriptionInput.value = tempDescription;
+
+            editAccountBtn.innerHTML = "Edit Account"
+            usernameInput.disabled = true;
+            descriptionInput.disabled = true;
+
+            resetAccountBtn.style.display = "none"
+        })
+
+    
+        
+    </script>
+</body>
+</html>

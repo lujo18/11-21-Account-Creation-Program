@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="preload" href="/static/styles/styles.css">
+    <link rel="stylesheet" href="/static/styles/styles.css">
+    <script src="https://kit.fontawesome.com/45743c6752.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <main class="thirds">  
+        <%- include("partials/inAppNav")%>
+        <section class="group-cont">
+            <h3><%= group.group_name %></h3>
+            <p><%= group.group_description%></p>
+            <div class="block posts-cont">
+                <% post.forEach(post => {%>
+                    <div class="post" data-href="<%= post.id %>">
+                        <a href="/user/<%= post.Accounts.username %>" class="poat-author"><%= post.Accounts.username %></a>
+                        <div class="post-body">   
+                            <h3 class="post-title"><%= post.title %></h3>
+                            <div>
+                                <p><%= post.content %></p>
+                            </div>
+                            <div class="post-data">
+                                <div class="like-cont">
+                                    <i class="fa-regular fa-heart" data-user-liked="<%= post.user_liked[0]?true:false %>"></i>
+                                    <p class="likes"><%= post.total_likes.length == 0 ? "" : post.total_likes.length%></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+
+                <%})%>
+                
+            </div>
+
+        </section>
+
+    </main>
+    <%- include("partials/createPost")%>
+    <script type="text/javascript" src="static/scripts/group-page.js"></script>
+</body>
+</html>
