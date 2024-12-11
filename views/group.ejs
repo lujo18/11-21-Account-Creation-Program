@@ -14,8 +14,14 @@
         <section class="group-cont">
             <h3><%= group.group_name %></h3>
             <p><%= group.group_description%></p>
+            <div class="group-tags">
+                <a href="/" class="group-tag">Default</a>
+                <% joined_groups.forEach(group => { %>
+                    <a href="/group/<%= group.Groups.group_name %>" class="group-tag"><%= group.Groups.group_name %></a>
+                <% }) %>
+            </div>
             <div class="block posts-cont">
-                <% post.forEach(post => {%>
+                <% try{ post.forEach(post => {%>
                     <div class="post" data-href="<%= post.id %>">
                         <a href="/user/<%= post.Accounts.username %>" class="poat-author"><%= post.Accounts.username %></a>
                         <div class="post-body">   
@@ -28,19 +34,25 @@
                                     <i class="fa-regular fa-heart" data-user-liked="<%= post.user_liked[0]?true:false %>"></i>
                                     <p class="likes"><%= post.total_likes.length == 0 ? "" : post.total_likes.length%></p>
                                 </div>
+                                <div class="comment-cont">
+                                    <i class="fa-regular fa-message"></i>
+                                    <p class="likes"><%= post.total_comments.length == 0 ? "" : post.total_comments.length%></p>
+                                </div>
                             </div>
                         </div>
                     </div>
         
 
-                <%})%>
-                
+                <%})} catch (error) {%>
+                    <p>No Posts Exist</p>
+                <% } %>
             </div>
 
         </section>
 
     </main>
     <%- include("partials/createPost")%>
-    <script type="text/javascript" src="static/scripts/group-page.js"></script>
+    <script type="text/javascript" src="/static/scripts/group-page.js"></script>
+    <script type="text/javascript" src="/static/scripts/post-analytics.js"></script>
 </body>
 </html>

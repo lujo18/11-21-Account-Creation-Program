@@ -1,23 +1,33 @@
+<script src="https://kit.fontawesome.com/45743c6752.js" crossorigin="anonymous"></script>
+
 <section class="hidden post-cont" style="transform: translate(-50%, -50%);">
     <form id="new-post">
         <div>
             <select id="post-group">
-                <option>Everyone \/</option>
+                <option value="1">Everyone</option>
             </select>
         </div>
-        <div>
-            <label for="post-title">Title</label>
-            <input id="post-title" name="post-title" required>
+        <div id="main-content">
+            <div>
+                <label for="post-title">Title</label>
+                <input id="post-title" name="post-title" required>
+            </div>
+            <div>
+                <label for="post-content">Content</label>
+                <textarea id="post-content" name="post-content" class="focusedArea" required></textarea>
+            </div>
         </div>
-        <div>
-            <label for="post-content">Content</label>
-            <textarea id="post-content" name="post-content" required></textarea>
+        <div id="thread-content">
+
         </div>
-        <button class="btn">Post</button>
+        <div id="post-toolbar">
+            <button type="button" id="add-thread"><i class="fa-solid fa-plus" style="color: black;"></i></button>
+            <button type="submit" class="btn">Post</button>
+        </div>
     </form>
 </section>
 
 <div class="cover"></div>
 <button id="create-post">P</button>
 
-<script type="text/javascript" src="/static/scripts/create-post.js"></script>
+<script type="module" src="/static/scripts/create-post.js"></script>

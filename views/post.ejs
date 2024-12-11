@@ -12,17 +12,70 @@
     
     <main class="thirds">  
         <%- include("partials/inAppNav")%>
-        <section>
+        <section style="overflow-y: auto;">
             <h3>Post</h3>
-            <div class="block">
-                <h1><input name="username" id="username-box" autocomplete="username" value="<%= data.title %>" disabled></h1>
-                <textarea data-gramm="false" spellcheck="false" autocomplete="false" maxlength="72" id="user-description" placeholder="Create your user-description" disabled><%= data.content%></textarea>
+            <div class="block post" data-href="<%= post.id %>">
+                <h1><input name="username" id="username-box" autocomplete="username" value="<%= post.title %>" disabled></h1>
+                <textarea data-gramm="false" spellcheck="false" autocomplete="false" maxlength="72" id="user-description" placeholder="Create your user-description" disabled><%= post.content%></textarea>
                 
+                <div class="post-data">
+                    <div class="like-cont">
+                        <i class="fa-regular fa-heart" data-user-liked="<%= post.user_liked[0]?true:false %>"></i>
+                        <p class="likes"><%= post.total_likes.length == 0 ? "" : post.total_likes.length%></p>
+                    </div>
+                    <div class="comment-cont">
+                        <i class="fa-regular fa-message"></i>
+                        <p class="likes"><%= post.total_comments.length == 0 ? "" : post.total_comments.length%></p>
+                    </div>
+                </div>
             </div>
 
+            <div class="block">
+                <form id="new-comment" style="display: flex; flex-direction: row;">
+                    <div>
+                        <label for="comment">Reply</label>
+                        <input id="comment" name="comment" placeholder="Post your reply" style="font-size: 1.2em;">
+                    </div>
+                    <button class="btn">Reply</button>
+                </form>
+            </div>
+
+            
+            <% if (threadPosts.lenght > 0) {%>
+                <div class="block">
+                    <% threadPosts.forEach(thread => { %>
+                        <div class="post" data-href="<%= tread.id %>">
+                            <textarea data-gramm="false" spellcheck="false" autocomplete="false" maxlength="72" id="user-description" placeholder="Create your user-description" disabled><%= thread.content%></textarea>
+                            
+                            <div class="post-data">
+                                <div class="like-cont">
+                                    <i class="fa-regular fa-heart" data-user-liked="<%= thread.user_liked[0]?true:false %>"></i>
+                                    <p class="likes"><%= thread.total_likes.length == 0 ? "" : thread.total_likes.length%></p>
+                                </div>
+                                <div class="comment-cont">
+                                    <i class="fa-regular fa-message"></i>
+                                    <p class="likes"><%= thread.total_comments.length == 0 ? "" : thread.total_comments.length%></p>
+                                </div>
+                            </div>
+                    <% }) %>
+                </div>
+            <% }%>
+
+            <div class="block">
+                <% try {comments.forEach(comment => { %>
+                    <div class="block">
+                        <a href="/user/<%= comment.Accounts.username %>"> <%= comment.Accounts.username %></a>
+                        <p> <%= comment.content %></p>
+                    </div>
+                <% }) } catch(error) {console.log(error)} %>
+            </div>
         </section>
+        
 
     </main>
     <%- include("partials/createPost")%>
+    
+    <script type="text/javascript" src="/static/scripts/post-analytics.js"></script>
+    <script type="text/javascript" src="/static/scripts/create-comment.js"></script>
 </body>
 </html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="preload" href="/static/styles/styles.css">
+    <link rel="stylesheet" href="/static/styles/styles.css">
+    <script src="https://kit.fontawesome.com/45743c6752.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <main class="thirds">  
+        <%- include("partials/inAppNav")%>
+        <section class="group-cont">
+            <div class="block posts-cont">
+                <% try{ groups.forEach(group => {%>
+                    <div class="post">
+                        <div class="post-body">   
+                            <h3 class="post-title"><%= group.group_name %></h3>
+                            <div>
+                                <p><%= group.group_description %></p>
+                            </div>
+                            <button id="join-group" data-group-id="<%= group.id %>" data-user-joined="<%= group.user_joined[0] ? true : false %>">Join</button>
+                        </div>
+                    </div>
+        
+
+                <%})} catch (error) {%>
+                    <p>No Groups Exist</p>
+                <% } %>
+            </div>
+
+        </section>
+
+    </main>
+    <%- include("partials/createPost")%>
+    <script type="text/javascript" src="/static/scripts/group-options.js"></script>
+</body>
+</html>

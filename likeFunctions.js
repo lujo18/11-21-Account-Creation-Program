@@ -40,7 +40,7 @@ async function getLike(postId, sessionId) {
         .single()
 
     console.log(error)
-    console.log(data)
+    
     if (data) {
         return data.id;
     }

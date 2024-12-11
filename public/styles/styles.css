@@ -27,6 +27,10 @@ nav {
 
 }
 
+a {
+    text-decoration: none;
+}
+
 nav ul {
     display: flex;
     flex-direction: column;
@@ -77,7 +81,7 @@ main.halfs {
 }
 
 main.thirds {
-    grid-template-columns: 15% 70% 15%;
+    grid-template-columns: 20% 60% 20%;
     grid-template-rows: 100vh;
 }
 
@@ -145,11 +149,11 @@ form > * {
     width: 100%;
 }
 
-form > div {
+div:has(label) {
     position: relative;
 }
 
-form > div > label {
+label {
     position: absolute;
     top: -.5rem;
     left: 1.5rem;
@@ -275,7 +279,9 @@ textarea:disabled {
 .post-cont {
     z-index: 10;
     width: min(1000px, 50vw);
-    height: 50vh;
+    height: fit-content;
+    max-height: 90vh;
+    overflow-y: auto;
     position: absolute;
     background-color: var(--main-background);
     border: 2px solid var(--secondary-background);
@@ -291,11 +297,20 @@ textarea:disabled {
     transform: translate(-50%, 100%) !important;
 }
 
+#post-toolbar{
+    position: sticky;
+    left: 0;
+    bottom: 0;
+    background-color: var(--main-background);
+    width: 100%;
+}
+
 #new-post {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     height: 100%;
+
 }
 
 .post-cont #post-title {
@@ -309,7 +324,14 @@ textarea:disabled {
 .post-cont textarea {
     width: 100%;
     font-size: 1.2em;
-    height: 100%;
+    height: 3rem;
+    transition: .5s ease;
+    color: var(--disabled-text);
+}
+
+.post-cont textarea.focusedArea {
+    height: 10rem;
+    color: white;
 }
 
 .post-cont .btn {
@@ -352,7 +374,14 @@ textarea:disabled {
 
 .posts-cont {
     overflow-y: auto;
+    border-radius: 0 0 2rem 2rem;
     height: 100%;
+}
+
+#main-content, #thread-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .post-body {
@@ -365,7 +394,12 @@ textarea:disabled {
 .post-data {
     display: flex;
     flex-direction: row;
-    gap: 1rem;
+    margin-right: 2rem;
+    width: 80%;
+    justify-content: space-between;
+    align-content: center;
+    align-self: center;
+
 }
 
 .post-data > div {
@@ -402,4 +436,18 @@ textarea:disabled {
 
 .like-cont:has(.fa-heart.fa-regular):hover .likes{
     color: rgb(232, 55, 212);
+}
+
+.group-tags {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.group-tag {
+    border: 1px solid var(--secondary-background);
+    padding: 1rem;
+    display: flex;
+    align-content: center;
 }

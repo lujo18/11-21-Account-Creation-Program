@@ -114,11 +114,34 @@ app.use(session({
 app.use((req, res, next) => {
     if (req.session && req.session.user) {
         res.locals.session = req.session.user;
+
+
     }
     else {
         res.locals.session = null;
     }
     next();
+})
+
+async function getJoinedGroups(userId) {
+    const {data, error} = await supabase
+        .from("Group Members")
+        .select(`
+            group_id,
+            Groups("group_name")
+            `)
+        .eq("user_id", userId)
+
+    if (error) {
+        console.error("Failed to retrieve member:group relation:", error)
+        return -1;
+    }
+    return data;
+}
+
+app.get("/user-groups", async (req, res) => {
+
+    res.json({groups: await getJoinedGroups(req.session.user.id)})
 })
 
 io.on('connection', async (socket) => {
@@ -136,6 +159,7 @@ io.on('connection', async (socket) => {
 })
 
 async function retrieveMessages(req, groupId, offset, limit) {
+
     const {data, error} = await supabase
         .from("Posts")
         .select(`
@@ -145,9 +169,11 @@ async function retrieveMessages(req, groupId, offset, limit) {
             content,
             Accounts(id, username),
             user_liked: Likes(user_id),
-            total_likes: Likes(post_id)`)
+            total_likes: Likes(id),
+            total_comments: Comments(id)`)
         .eq("group_id", groupId)
         .eq("user_liked.user_id", req.session.user.id)
+        .is("parent_id", null)
         .order("created_at", { ascending: false })
         .range(offset, offset + limit - 1)
         
@@ -160,11 +186,11 @@ async function retrieveMessages(req, groupId, offset, limit) {
     return data;
 }
 
-async function retrieveGroupData(groupId) {
+async function retrieveGroupData(groupName) {
     const {data, error} = await supabase
         .from("Groups")
-        .select("*")
-        .eq("id", groupId)
+        .select(`*`)
+        .eq("group_name", groupName)
 
     if (error) {
         console.error("Failed to locate group", error)
@@ -183,9 +209,11 @@ app.get("/", async (req, res) => {
 
     console.log(groupMessages)
     
-    const groupData = await retrieveGroupData(1);
+    const groupData = await retrieveGroupData("Default");
 
-    res.render("group", {group: groupData[0], post: groupMessages})
+    const joinedGroups = await getJoinedGroups(req.session.user.id)
+
+    res.render("group", {group: groupData[0], post: groupMessages, joined_groups: joinedGroups})
     
 })
 
@@ -301,13 +329,27 @@ app.post("/createPost", async (req, res) => {
     const {data, error} = await supabase
         .from("Posts")
         .insert([
-            {"title": title, "content": content, "user_id": req.session.user.id, "group_id":1}
+            {"title": title, "content": content, "user_id": req.session.user.id, "group_id":group}
         ])
 
     if (error) {
         console.error("Failed to create new post", error)
     }
     
+})
+
+app.post("/createComment", async (req, res) => {
+    const {content, parentId} = req.body;
+
+    const {data, error} = await supabase
+        .from("Comments")
+        .insert([
+            {"content": content, "parent_id": parentId, "user_id": req.session.user.id}
+        ])
+
+    if (error) {
+        console.error("Failed to create new comment", error)
+    }
 })
 
 app.get("/user", async (req, res) => {
@@ -350,7 +392,23 @@ app.get("/user/:username", async (req, res) => {
     })
 })
 
-async function retrievePostData(postId) {
+async function getLikes(req, postId) {
+    const {data, error} = await supabase
+        .from("Posts")
+        .select(`
+            likes: Likes(id)`)
+        .eq("id", postId)
+        
+
+    if (error) {
+        console.error("Failed to retrieve likes", error)
+        return -1;
+    } 
+    return data;
+}
+
+
+async function retrievePostData(req, postId) {
     const {data, error} = await supabase
         .from("Posts")
         .select(`
@@ -360,11 +418,58 @@ async function retrievePostData(postId) {
             content,
             Accounts(id, username),
             Groups(id, group_name),
-            likes: Likes(id)`)
+            user_liked: Likes(user_id),
+            total_likes: Likes(id),
+            total_comments: Comments(id)`)
         .eq("id", postId)
+        .eq("user_liked.user_id", req.session.user.id)
+        .single()
+        
 
     if (error) {
         console.error("Failed to locate this post", error)
+        return -1;
+    } 
+    return data;
+}
+
+async function retrievePostThread(req, postId) {
+    const {data, error} = await supabase
+        .from("Posts")
+        .select(`
+            id,
+            created_at,
+            title,
+            content,
+            Accounts(id, username),
+            Groups(id, group_name),
+            user_liked: Likes(user_id),
+            total_likes: Likes(id),
+            total_comments: Comments(id)`)
+        .eq("parent_id", postId)
+        .eq("user_liked.user_id", req.session.user.id)
+
+    if (error) {
+        console.error("Failed to locate thread posts", error)
+        return -1;
+    } 
+    return data;
+}
+
+async function retrievePostComments(postId) {
+    const {data, error} = await supabase
+        .from("Comments")
+        .select(`
+            created_at,
+            content,
+            user_id,
+            Accounts(username)
+            
+            `)
+        .eq("parent_id", postId)
+
+    if (error) {
+        console.error("Failed to locate any comments", error)
         return -1;
     } 
     return data;
@@ -375,13 +480,17 @@ app.get("/post/:postId", async (req,res) => {
 
     
 
-    const postData = await retrievePostData(postId);
+    const postData = await retrievePostData(req, postId);
 
-    console.log(postData)
+    const threadData = await retrievePostThread(req, postId);
+
+    const commentData = await retrievePostComments(postId);
+
+    console.log("Threads", threadData)
 
 
     if (postData) {
-        res.render("post", {data: postData[0]})
+        res.render("post", {post: postData, threadPosts: threadData, comments: commentData})
     }
     else {
         req.redirect("/")
@@ -396,7 +505,9 @@ app.post("/likePost", async (req, res) => {
 
     const state = await likeFunctions.likePost(postId, req.session.user.id)
 
-    let likes = await retrievePostData(postId)
+    let likes = await getLikes(req, postId)
+
+    console.log(likes)
     likes = likes[0].likes.length
 
     
@@ -404,6 +515,90 @@ app.post("/likePost", async (req, res) => {
 
     res.status(201).json({message: "Like changed successfully", state, likes})
 
+})
+
+async function getGroups(userId) {
+    const {data, error} = await supabase
+        .from("Groups")
+        .select(`
+            *,
+            user_joined: "Group Members"(*)`)
+        .eq("user_joined.user_id", userId)
+        .range(1, 20)
+
+    if (error) {
+        console.error("Failed to retrieve groups:", error)
+        return -1
+    }
+    return data
+}
+
+app.get("/group", async (req, res) => {
+    if (!req.session.user) {
+        res.redirect("/");
+        return
+    }
+
+    const allGroups = await getGroups(req.session.user.id);
+
+    console.log(allGroups)
+
+    res.render("groupOptions", {groups: allGroups})
+})
+
+async function addToGroup(userId, groupId) {
+    const {data, error} = await supabase
+        .from("Group Members")
+        .insert({"user_id": userId, "group_id": groupId})
+
+    if (error) {
+        console.error("Failed to retrieve groups:", error)
+        return false;
+    }
+    return true;
+}
+
+
+app.post("/join-group", async (req, res) => {
+    const {groupId} = req.body;
+
+    const response = await addToGroup(req.session.user.id, groupId)
+
+    if (response) {
+        res.status("201").json({message: `Successfully joined group`, response})
+    } else {
+        res.status("404").json({message: `Failed to joined group`, response})
+    }
+
+})
+
+
+app.get("/group/:groupName", async (req, res) => {
+    if (!req.session.user) {
+        res.redirect("/");
+        return
+    }
+
+    const {groupName} = req.params;
+
+    const [groupData] = await retrieveGroupData(groupName);
+
+    const joinedGroups = await getJoinedGroups(req.session.user.id)
+
+    if(!groupData) {
+        res.render("groupDoesn'tExist")
+        return
+    }
+
+
+    console.log("GROUP ID:", groupData.id)
+
+    const groupMessages = await retrieveMessages(req, groupData.id, 0, 50);
+    
+    console.log("GROUP DATA", groupData)
+    console.log("POST DATA", groupMessages)
+
+    res.render("group", {group: groupData, post: groupMessages, joined_groups: joinedGroups})
 })
 
 server.listen(8080, (err) => {
