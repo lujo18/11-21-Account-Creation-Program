@@ -247,7 +247,7 @@ textarea {
     background-color: transparent;
     color: rgb(188, 188, 188);
     resize: none;
-    width: 20em;
+    width: 100%;
     height: calc(2 * 1.5em + 2rem);
     padding: 1rem;
     border-radius: 1rem;
@@ -334,6 +334,17 @@ textarea:disabled {
     color: white;
 }
 
+.thread-input {
+    position: relative;
+}
+
+.delete-textbox {
+    position: absolute;
+    top: .5rem;
+    right: .5rem;
+    padding: .5rem;
+}
+
 .post-cont .btn {
     align-self: flex-end;
 }
@@ -369,6 +380,8 @@ textarea:disabled {
     gap: 1rem;
     padding: 1rem;
     border-radius: 2rem;
+    height: min-content;
+    position: relative;
 
 }
 
@@ -450,4 +463,22 @@ textarea:disabled {
     padding: 1rem;
     display: flex;
     align-content: center;
+}
+
+.thread-cont .post {
+    border-top: 1px solid rgb(16, 16, 16);;
+    border-bottom: 1px solid rgb(16, 16, 16);
+    border-radius: 0;
+}
+
+.thread-cont .post:nth-child(1) {
+    border-radius: 2rem 2rem 0 0;
+    border-top: 1px solid var(--secondary-background);
+    border-bottom: 1px solid rgb(16, 16, 16);;
+}
+
+.thread-cont .post:nth-last-child(1) {
+    border-radius: 0 0 2rem 2rem;
+    border-bottom: 1px solid var(--secondary-background);
+    border-top: 1px solid rgb(16, 16, 16);;
 }

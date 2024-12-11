@@ -27,7 +27,7 @@
                         <div class="post-body">   
                             <h3 class="post-title"><%= post.title %></h3>
                             <div>
-                                <p><%= post.content %></p>
+                                <pre class="post-content"><%= post.content %></pre>
                             </div>
                             <div class="post-data">
                                 <div class="like-cont">
@@ -54,5 +54,6 @@
     <%- include("partials/createPost")%>
     <script type="text/javascript" src="/static/scripts/group-page.js"></script>
     <script type="text/javascript" src="/static/scripts/post-analytics.js"></script>
+    
 </body>
 </html>

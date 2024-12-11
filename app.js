@@ -324,17 +324,48 @@ app.post("/login", async (req, res) => {
 })
 
 app.post("/createPost", async (req, res) => {
-    const {title, content, group} = req.body;
+    const {title, content, group, threads} = req.body;
 
-    const {data, error} = await supabase
+    const {data: postData, error} = await supabase
         .from("Posts")
         .insert([
             {"title": title, "content": content, "user_id": req.session.user.id, "group_id":group}
         ])
+        .select("id");
+
 
     if (error) {
         console.error("Failed to create new post", error)
     }
+
+    const parentId = postData[0].id
+
+    console.log(threads)
+
+    if (threads.length > 0) {
+        threads.forEach(async thread => {
+            
+            console.log("parentId", parentId)
+
+            const {data, error} = await supabase
+                .from("Posts")
+                .insert([
+                    {"content": thread.text, "user_id": req.session.user.id, "group_id":group, "parent_id": parentId}
+                ])
+            
+
+        
+
+            if (error) {
+                console.error("Failed to create new post", error)
+            }
+        })
+
+       
+    
+    }
+
+    
     
 })
 

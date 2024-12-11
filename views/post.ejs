@@ -12,11 +12,11 @@
     
     <main class="thirds">  
         <%- include("partials/inAppNav")%>
-        <section style="overflow-y: auto;">
+        <section id="post-page" style="overflow-y: auto;">
             <h3>Post</h3>
             <div class="block post" data-href="<%= post.id %>">
                 <h1><input name="username" id="username-box" autocomplete="username" value="<%= post.title %>" disabled></h1>
-                <textarea data-gramm="false" spellcheck="false" autocomplete="false" maxlength="72" id="user-description" placeholder="Create your user-description" disabled><%= post.content%></textarea>
+                <textarea class="post-content" disabled><%= post.content%></textarea>
                 
                 <div class="post-data">
                     <div class="like-cont">
@@ -41,11 +41,12 @@
             </div>
 
             
-            <% if (threadPosts.lenght > 0) {%>
-                <div class="block">
+            <% if (threadPosts.length > 0) {%>
+                <div class="block thread-cont">
                     <% threadPosts.forEach(thread => { %>
-                        <div class="post" data-href="<%= tread.id %>">
-                            <textarea data-gramm="false" spellcheck="false" autocomplete="false" maxlength="72" id="user-description" placeholder="Create your user-description" disabled><%= thread.content%></textarea>
+                        <div class="post" data-href="<%= thread.id %>">
+                            <div class="thread-rod"></div>
+                            <pre class="post-content"><%= thread.content%></pre>
                             
                             <div class="post-data">
                                 <div class="like-cont">
@@ -57,6 +58,7 @@
                                     <p class="likes"><%= thread.total_comments.length == 0 ? "" : thread.total_comments.length%></p>
                                 </div>
                             </div>
+                        </div>
                     <% }) %>
                 </div>
             <% }%>
@@ -65,7 +67,7 @@
                 <% try {comments.forEach(comment => { %>
                     <div class="block">
                         <a href="/user/<%= comment.Accounts.username %>"> <%= comment.Accounts.username %></a>
-                        <p> <%= comment.content %></p>
+                        <pre class="post-content"> <%= comment.content %></pre>
                     </div>
                 <% }) } catch(error) {console.log(error)} %>
             </div>
@@ -77,5 +79,6 @@
     
     <script type="text/javascript" src="/static/scripts/post-analytics.js"></script>
     <script type="text/javascript" src="/static/scripts/create-comment.js"></script>
+    
 </body>
 </html>
